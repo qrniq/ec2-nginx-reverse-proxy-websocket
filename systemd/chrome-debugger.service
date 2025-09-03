@@ -1,0 +1,46 @@
+[Unit]
+Description=Chrome Debugger Service for nginx Proxy
+Documentation=file:///root/repo/README.md
+After=network.target network-online.target
+Wants=network-online.target
+Before=nginx.service
+
+[Service]
+Type=forking
+User=chrome
+Group=chrome
+ExecStartPre=/bin/bash -c 'mkdir -p /var/log/chrome-debug /var/run/chrome-debug /tmp/chrome-debug-data'
+ExecStartPre=/bin/bash -c 'chown -R chrome:chrome /var/log/chrome-debug /var/run/chrome-debug /tmp/chrome-debug-data'
+ExecStart=/root/repo/scripts/start-chrome.sh start
+ExecStop=/root/repo/scripts/start-chrome.sh stop-all
+ExecReload=/bin/bash -c '/root/repo/scripts/start-chrome.sh stop-all && sleep 2 && /root/repo/scripts/start-chrome.sh start'
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/chrome-debug /var/run/chrome-debug /tmp/chrome-debug-data
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+
+# Resource limits
+LimitNOFILE=8192
+LimitNPROC=100
+MemoryLimit=2G
+
+# Environment
+Environment=DISPLAY=:99
+Environment=CHROME_LOG_LEVEL=0
+Environment=CHROME_DATA_DIR=/tmp/chrome-debug-data
+
+[Install]
+WantedBy=multi-user.target
+Also=nginx.service
