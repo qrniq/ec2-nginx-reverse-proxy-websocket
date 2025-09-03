@@ -11,7 +11,7 @@ NGINX_CONF_DIR="/etc/nginx"
 NGINX_SITES_DIR="$NGINX_CONF_DIR/sites-available"
 NGINX_CONF_D_DIR="$NGINX_CONF_DIR/conf.d"
 LOG_DIR="/var/log/nginx"
-PROJECT_DIR="/root/repo"
+PROJECT_DIR="~/ec2-nginx-reverse-proxy-websocket"
 BACKUP_DIR="/tmp/nginx-backup-$(date +%Y%m%d-%H%M%S)"
 
 # Colors for output
