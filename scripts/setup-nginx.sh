@@ -11,7 +11,9 @@ NGINX_CONF_DIR="/etc/nginx"
 NGINX_SITES_DIR="$NGINX_CONF_DIR/sites-available"
 NGINX_CONF_D_DIR="$NGINX_CONF_DIR/conf.d"
 LOG_DIR="/var/log/nginx"
-PROJECT_DIR="/home/ec2-user/ec2-nginx-reverse-proxy-websocket"
+# Auto-detect project directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 BACKUP_DIR="/tmp/nginx-backup-$(date +%Y%m%d-%H%M%S)"
 
 # Colors for output
@@ -115,6 +117,19 @@ setup_nginx_config() {
     # Copy main nginx configuration
     if [[ -f "$PROJECT_DIR/nginx/nginx.conf" ]]; then
         cp "$PROJECT_DIR/nginx/nginx.conf" "$NGINX_CONF_DIR/"
+        
+        # Fix nginx user based on OS
+        case "$OS" in
+            ubuntu|debian)
+                sed -i 's/^user nginx;/user www-data;/' "$NGINX_CONF_DIR/nginx.conf"
+                log "Updated nginx user to www-data for Ubuntu/Debian"
+                ;;
+            centos|rhel|fedora|amzn)
+                # nginx user is correct for these systems
+                log "Using nginx user for CentOS/RHEL/Fedora/Amazon Linux"
+                ;;
+        esac
+        
         log "Copied main nginx.conf"
     else
         error "nginx.conf not found in $PROJECT_DIR/nginx/"
