@@ -1,0 +1,37 @@
+[Unit]
+Description=nginx HTTP and reverse proxy server for Chrome Debugger
+Documentation=http://nginx.org/en/docs/
+After=network-online.target remote-fs.target nss-lookup.target chrome-debugger.service
+Wants=network-online.target
+BindsTo=chrome-debugger.service
+
+[Service]
+Type=forking
+PIDFile=/var/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx
+ExecReload=/bin/bash -c '/usr/sbin/nginx -t && /bin/kill -s HUP $MAINPID'
+ExecStop=/bin/kill -s QUIT $MAINPID
+TimeoutStopSec=5
+KillMode=mixed
+PrivateTmp=true
+
+# Security and resource settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/nginx /var/cache/nginx /etc/nginx/conf.d
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+
+# nginx specific limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+Also=chrome-debugger.service

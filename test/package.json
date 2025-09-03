@@ -1,0 +1,30 @@
+{
+  "name": "chrome-debugger-proxy-test",
+  "version": "1.0.0",
+  "description": "Test suite for Chrome debugger nginx reverse proxy",
+  "main": "connection-test.js",
+  "scripts": {
+    "test": "node connection-test.js",
+    "test:load": "node load-test.js",
+    "test:integration": "./integration-test.sh",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.32.0",
+    "ws": "^8.14.0",
+    "node-fetch": "^3.3.0"
+  },
+  "devDependencies": {
+    "loadtest": "^8.0.0"
+  },
+  "keywords": [
+    "chrome",
+    "debugger",
+    "nginx",
+    "websocket",
+    "proxy",
+    "test"
+  ],
+  "author": "Terragon Labs",
+  "license": "MIT"
+}

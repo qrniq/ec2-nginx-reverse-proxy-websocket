@@ -1,0 +1,26 @@
+[Unit]
+Description=Chrome Debugger Proxy Manager
+Documentation=file:///root/repo/README.md
+After=network.target network-online.target
+Wants=network-online.target
+Requisite=chrome-debugger.service nginx-proxy.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+Group=root
+
+# Service management commands
+ExecStart=/bin/bash -c 'echo "Chrome Debugger Proxy Manager: Starting services..."'
+ExecStartPost=/bin/bash -c 'sleep 5 && /root/repo/scripts/health-check.sh quick || echo "Warning: Initial health check failed"'
+ExecReload=/bin/bash -c 'systemctl reload chrome-debugger nginx-proxy && echo "Services reloaded"'
+ExecStop=/bin/bash -c 'echo "Chrome Debugger Proxy Manager: Stopping services..."'
+
+# Timeout settings
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
+Also=chrome-debugger.service nginx-proxy.service
